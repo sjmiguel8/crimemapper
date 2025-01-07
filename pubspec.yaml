@@ -1,0 +1,11 @@
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.1.0
+  flutter_riverpod: ^2.4.0
+  # Add other dependencies as needed
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0 
