@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/department_provider.dart';
 import '../models/department.dart';
 import '../utils/url_launcher.dart';
+import '../screens/map_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -14,6 +15,18 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Houston Departments'),
+        actions: [
+          // Add Map Button
+          IconButton(
+            icon: const Icon(Icons.map),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MapScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
