@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/department.dart';
 
+
 class HoustonApiService {
   // OData endpoint
   static const String odataUrl = 'https://data.houstontx.gov/datastore/odata3.0/36310599-c9bc-499a-af44-a8b874438e81';
@@ -9,6 +10,7 @@ class HoustonApiService {
   // CKAN API endpoint
   static const String ckanUrl = 'https://data.houstontx.gov/api/3/action/datastore_search';
   static const String resourceId = '36310599-c9bc-499a-af44-a8b874438e81';
+
 
   Future<List<Department>> getDepartments() async {
     try {
@@ -19,8 +21,8 @@ class HoustonApiService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['success']) {
-          final records = data['result']['records'] as List;
+        if (data['success'] == true) {
+          final records = data['result']['records'] as List<dynamic>;
           return records.map((record) => Department.fromJson(record)).toList();
         }
       }
@@ -34,12 +36,12 @@ class HoustonApiService {
   Future<Department?> getDepartmentById(int departmentId) async {
     try {
       final response = await http.get(
-        Uri.parse('$ckanUrl?resource_id=$resourceId&filters={"_1":"$departmentId"}'),
+        Uri.parse('$ckanUrl?resource_id=$resourceId&filters={"department_id":"$departmentId"}'),
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['success'] && data['result']['records'].isNotEmpty) {
+        if (data['success'] == true && data['result']['records'].isNotEmpty) {
           return Department.fromJson(data['result']['records'][0]);
         }
       }

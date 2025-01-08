@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/department_provider.dart';
+import '../models/department.dart';
 import '../utils/url_launcher.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -8,7 +9,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final departmentsAsync = ref.watch(departmentsProvider);
+    final departments = ref.watch(filteredDepartmentsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -16,6 +17,7 @@ class HomeScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
+          // Search Bar
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SearchBar(
@@ -25,57 +27,83 @@ class HomeScreen extends ConsumerWidget {
               },
             ),
           ),
+          // Departments List
           Expanded(
-            child: departmentsAsync.when(
-              data: (departments) => departments.isEmpty
-                  ? const Center(
-                      child: Text('No departments found'),
-                    )
-                  : ListView.builder(
-                      itemCount: departments.length,
-                      itemBuilder: (context, index) {
-                        final department = departments[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 8.0,
-                            vertical: 4.0,
-                          ),
-                          child: ListTile(
-                            title: Text(department.name),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(department.category),
-                                Text(department.abbreviation),
-                              ],
-                            ),
-                            trailing: department.website.isNotEmpty
-                                ? IconButton(
-                                    icon: const Icon(Icons.language),
-                                    onPressed: () async {
-                                      try {
-                                        await launchUrlString(department.website);
-                                      } catch (e) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('Could not open website: $e')),
-                                        );
-                                      }
-                                    },
-                                  )
-                                : null,
-                            onTap: () {
-                              // TODO: Navigate to detail view
-                            },
-                          ),
-                        );
-                      },
-                    ),
+            child: departments.when(
+              data: (depts) {
+                if (depts.isEmpty) {
+                  return const Center(
+                    child: Text('No departments found'),
+                  );
+                }
+                return ListView.builder(
+                  itemCount: depts.length,
+                  itemBuilder: (context, index) {
+                    final dept = depts[index];
+                    return DepartmentCard(department: dept);
+                  },
+                );
+              },
               loading: () => const Center(
                 child: CircularProgressIndicator(),
               ),
               error: (error, stack) => Center(
                 child: Text('Error: $error'),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DepartmentCard extends StatelessWidget {
+  final Department department;
+
+  const DepartmentCard({
+    super.key,
+    required this.department,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(
+        horizontal: 8.0,
+        vertical: 4.0,
+      ),
+      child: ExpansionTile(
+        title: Text(department.name),
+        subtitle: Text(department.type),
+        leading: CircleAvatar(
+          child: Text(department.abbreviation),
+        ),
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (department.phone != null)
+                  ListTile(
+                    leading: const Icon(Icons.phone),
+                    title: Text(department.phone!),
+                    onTap: () => launchUrlString('tel:${department.phone}'),
+                  ),
+                if (department.email != null)
+                  ListTile(
+                    leading: const Icon(Icons.email),
+                    title: Text(department.email!),
+                    onTap: () => launchUrlString('mailto:${department.email}'),
+                  ),
+                if (department.website.isNotEmpty)
+                  ListTile(
+                    leading: const Icon(Icons.language),
+                    title: const Text('Visit Website'),
+                    onTap: () => launchUrlString(department.website),
+                  ),
+              ],
             ),
           ),
         ],

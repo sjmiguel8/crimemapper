@@ -1,0 +1,29 @@
+﻿ID,Department Name (BA),Type,Acronym,Department Name,Webpage,Phone,Email
+1000,Houston Police Department-HPD,Public Safety,HPD,Houston Police Department,https://www.houstontx.gov/police,,
+1100,Dept of Neighborhoods (DON),Human & Cultural Services,DON,Department of Neighborhoods,https://www.houstontx.gov/neighborhoods,832.394.0600,contact.don@houstontx.gov
+1200,Houston Fire Department (HFD),Public Safety,HFD,Houston Fire Department,https://www.houstontx.gov/fire,,hfdpubinf@houstontx.gov
+1500,Houston Emergency Center (HEC),Public Safety,HEC,Houston Emergency Center,https://www.houstontx.gov/hec/,,joe.laud@houstontx.gov
+1600,Municipal Courts Department,Public Safety,MCD,Municipal Courts,https://www.houstontx.gov/courts,713.247.5464,presidingjudge@houstontx.gov
+2000,Houston Public Works - HPW,Development & Maintenance Services,HPW,Houston Public Works,https://www.houstonpublicworks.org/,832.395.2500,communications@houstontx.gov
+2100,Solid Waste Management,Development & Maintenance Services,SWM,Solid Waste Management,https://www.houstontx.gov/solidwaste,832.393.0454,swdworks@houstontx.gov
+2500,General Services Department,Development & Maintenance Services,GSD,General Services Department,https://www.houstontx.gov/generalservices,832.393.8118,gsd@houstontx.gov
+2800,Houston Airport System (HAS),Enterprise Funds,HAS,Houston Airport System,https://www.fly2houston.com/,281.233.3000,has.website@houstontx.gov
+3200,Housing and Community Devp.,Human & Cultural Services,HCD,Housing and Community Development Department,https://www.houstontx.gov/housing,832.394.6200,hcd@houstontx.gov
+3400,Library,Human & Cultural Services,HPL,Houston Public Library,https://www.houstonlibrary.org/,832.393.1313,
+3600,Parks & Recreation,Human & Cultural Services,PRD,Houston Parks and Recreation Department,https://www.houstontx.gov/parks,832.395.7000,askparks@houstontx.gov
+3800,Houston Health Department,Human & Cultural Services,HHD,Houston Health Department,https://www.houstonhealth.org/,832.393.4220,hhd.director@houstontx.gov
+4200,Convention and Entertainment,Human & Cultural Services,CE,,,,
+5000,Mayor's Office,Administrative Services,MYR,Mayor's Office,https://www.houstontx.gov/mayor/,,
+5100,Business Opportunity,Administrative Services,OBO,Office of Business Opportunity,https://www.houstontx.gov/obo,832.393.0600,director.obo@houstontx.gov
+5500,City Council,Administrative Services,CNL,City Council,https://www.houstontx.gov/council/,,
+6000,City Controller's Office,Administrative Services,CTR,The City of Houston Controller's Office,https://www.houstontx.gov/controller/,832.393.3460,controllers@houstontx.gov
+6400,Finance,Administrative Services,FIN,Finance Department,https://www.houstontx.gov/finance,832.393.9120,finance.director@houstontx.gov
+6500,Admn. & Regulatory Affairs,Administrative Services,ARA,Administration and Regulatory Affairs,https://www.houstontx.gov/ara,832.393.8501,aracontactus@houstontx.gov
+6700,Fleet Management Department,Revolving Funds,FMD,Fleet Management Department,https://www.houstontx.gov/fleet,832.393.6900,fleet@houstontx.gov
+6800,Houston Information Tech Svcs,Administrative Services,HITS,Houston Information Technology Services,https://www.houstontx.gov/hits,,houstontxdotgov@houstontx.gov
+7000,Planning & Development,Development & Maintenance Services,PLD,Planning and Development Department,https://www.houstontx.gov/planning,832.393.6600,planningdepartment@houstontx.gov
+7500,City Secretary,Administrative Services,CSC,Office of the City Secretary,https://www.houstontx.gov/citysec,832.393.1100,citysecretary@houstontx.gov
+8000,Human Resources Dept.,Administrative Services,HRD,Human Resources,https://www.houstontx.gov/hr,832.393.6100,careers@houstontx.gov
+9000,Legal Department,Administrative Services,LGL,Legal Department,https://www.houstontx.gov/legal,832.393.6491,arturo.michel@houstontx.gov
+9700,General Debt Services,Debt Service,GDS,,,,
+9900,Citywide General Government,General Government,COH,,,,

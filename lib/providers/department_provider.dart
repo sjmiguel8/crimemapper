@@ -1,26 +1,27 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/houston_api_service.dart';
+import '../services/department_service.dart';
 import '../models/department.dart';
 
-final houstonApiServiceProvider = Provider((ref) => HoustonApiService());
+final departmentServiceProvider = Provider((ref) => DepartmentService());
 
-// Search query state provider
+final departmentsProvider = FutureProvider<List<Department>>((ref) async {
+  final service = ref.read(departmentServiceProvider);
+  return service.loadDepartments();
+});
+
+// Add search functionality
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
-// Filtered departments provider
-final departmentsProvider = FutureProvider<List<Department>>((ref) async {
-  final apiService = ref.read(houstonApiServiceProvider);
-  final searchQuery = ref.watch(searchQueryProvider).toLowerCase();
+final filteredDepartmentsProvider = FutureProvider<List<Department>>((ref) async {
+  final departments = await ref.watch(departmentsProvider.future);
+  final query = ref.watch(searchQueryProvider);
   
-  final departments = await apiService.getDepartments();
+  if (query.isEmpty) return departments;
   
-  if (searchQuery.isEmpty) {
-    return departments;
-  }
-  
+  final lowercaseQuery = query.toLowerCase();
   return departments.where((dept) {
-    return dept.name.toLowerCase().contains(searchQuery) ||
-           dept.abbreviation.toLowerCase().contains(searchQuery) ||
-           dept.category.toLowerCase().contains(searchQuery);
+    return dept.name.toLowerCase().contains(lowercaseQuery) ||
+           dept.abbreviation.toLowerCase().contains(lowercaseQuery) ||
+           dept.type.toLowerCase().contains(lowercaseQuery);
   }).toList();
 }); 
