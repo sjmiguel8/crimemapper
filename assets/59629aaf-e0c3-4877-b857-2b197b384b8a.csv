@@ -1,0 +1,17 @@
+﻿_id,Year,population,Source
+1,2025,2302878,"Using year before, until updated using census data"
+2,2024,2302878,"Using year before, until updated using census data"
+3,2023,2302878,"Using year before, until updated using census data"
+4,2022,2302878,https://www.census.gov/quickfacts/houstoncitytexas
+5,2021,2291655,https://www.census.gov/data/tables/time-series/demo/popest/2020s-total-cities-and-towns.html
+6,2020,2304580,https://www.census.gov/quickfacts/fact/table/houstoncitytexas/PST045222
+7,2019,2320268,https://www.census.gov/data/tables/time-series/demo/popest/2010s-total-cities-and-towns.html#tables
+8,2018,2318573,https://www.census.gov/data/tables/time-series/demo/popest/2010s-total-cities-and-towns.html#tables
+9,2017,2316750,https://www.census.gov/data/tables/time-series/demo/popest/2010s-total-cities-and-towns.html#tables
+10,2016,2309544,https://www.census.gov/data/tables/time-series/demo/popest/2010s-total-cities-and-towns.html#tables
+11,2015,2286908,https://www.census.gov/data/tables/time-series/demo/popest/2010s-total-cities-and-towns.html#tables
+12,2014,2241826,https://www.census.gov/data/tables/time-series/demo/popest/2010s-total-cities-and-towns.html#tables
+13,2013,2199391,https://www.census.gov/data/tables/time-series/demo/popest/2010s-total-cities-and-towns.html#tables
+14,2012,2161593,https://www.census.gov/data/tables/time-series/demo/popest/2010s-total-cities-and-towns.html#tables
+15,2011,2126032,https://www.census.gov/data/tables/time-series/demo/popest/2010s-total-cities-and-towns.html#tables
+16,2010,2099451,https://www.census.gov/quickfacts/fact/table/houstoncitytexas/POP010210

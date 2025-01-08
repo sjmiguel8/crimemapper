@@ -1,0 +1,9 @@
+column,type,label,description
+ID,text,,Code designating the department in a major City's application. 
+Department Name (BA),text,,Caption of the department in a major City's application with a maximum of 30 characters. 
+Type,text,,The type groups departments together. 
+Acronym,text,,Customary acronym designating the department. CE and GDS were added for sake of consistency. 
+Department Name,text,,Name of the department
+Webpage,text,,Link to the landing page of the department
+Phone,text,,Phone contact information
+Email,text,,Email contact information

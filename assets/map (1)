@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Overpass API 0.7.62.4 2390de5a">
+<note>The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.</note>
+<meta osm_base="2025-01-08T05:11:52Z"/>
+
+  <bounds minlat="17.9000000" minlon="-88.3300000" maxlat="53.9000000" maxlon="-42.7100000"/>
+
+<remark> runtime error: open64: 12 Cannot allocate memory /srv/overpass/db/nodes.bin File_Blocks::read_block::4 </remark>
+
+</osm>

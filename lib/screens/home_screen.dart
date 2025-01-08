@@ -16,7 +16,59 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Houston Departments'),
         actions: [
-          // Add Map Button
+          // Type Filter Button
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Filter by Type'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        title: const Text('All'),
+                        onTap: () {
+                          ref.read(departmentTypeFilterProvider.notifier).state = null;
+                          Navigator.pop(context);
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Public Safety'),
+                        onTap: () {
+                          ref.read(departmentTypeFilterProvider.notifier).state = 'Public Safety';
+                          Navigator.pop(context);
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Human & Cultural Services'),
+                        onTap: () {
+                          ref.read(departmentTypeFilterProvider.notifier).state = 'Human & Cultural Services';
+                          Navigator.pop(context);
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Development & Maintenance'),
+                        onTap: () {
+                          ref.read(departmentTypeFilterProvider.notifier).state = 'Development & Maintenance Services';
+                          Navigator.pop(context);
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Administrative'),
+                        onTap: () {
+                          ref.read(departmentTypeFilterProvider.notifier).state = 'Administrative Services';
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          // Map Button
           IconButton(
             icon: const Icon(Icons.map),
             onPressed: () {
@@ -61,7 +113,20 @@ class HomeScreen extends ConsumerWidget {
                 child: CircularProgressIndicator(),
               ),
               error: (error, stack) => Center(
-                child: Text('Error: $error'),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                    const SizedBox(height: 16),
+                    Text('Error loading departments: $error'),
+                    TextButton(
+                      onPressed: () {
+                        ref.refresh(departmentsProvider);
+                      },
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -90,7 +155,7 @@ class DepartmentCard extends StatelessWidget {
         title: Text(department.name),
         subtitle: Text(department.type),
         leading: CircleAvatar(
-          child: Text(department.abbreviation),
+          child: Text(department.acronym),
         ),
         children: [
           Padding(
@@ -110,11 +175,11 @@ class DepartmentCard extends StatelessWidget {
                     title: Text(department.email!),
                     onTap: () => launchUrlString('mailto:${department.email}'),
                   ),
-                if (department.website.isNotEmpty)
+                if (department.webpage.isNotEmpty)
                   ListTile(
-                    leading: const Icon(Icons.language),
-                    title: const Text('Visit Website'),
-                    onTap: () => launchUrlString(department.website),
+                    leading: const Icon(Icons.link),
+                    title: const Text('Website'),
+                    onTap: () => launchUrlString(department.webpage),
                   ),
               ],
             ),

@@ -13,20 +13,36 @@ class DepartmentService {
       
       // First row is headers
       List<String> headers = csvTable[0].map((e) => e.toString()).toList();
-      print('CSV Headers: $headers'); // Debug print
+      print('CSV Headers: $headers');
       
       // Convert rows to Department objects
-      return csvTable.skip(1).map((row) {
-        // Create a map of column names to values
-        Map<String, dynamic> rowMap = {};
-        for (var i = 0; i < headers.length; i++) {
-          rowMap[headers[i]] = row[i];
+      List<Department> departments = [];
+      
+      // Skip header row and process each data row
+      for (var i = 1; i < csvTable.length; i++) {
+        try {
+          final row = csvTable[i];
+          if (row.length >= headers.length) {
+            Map<String, dynamic> rowMap = {};
+            for (var j = 0; j < headers.length; j++) {
+              rowMap[headers[j]] = row[j]?.toString() ?? '';
+            }
+            
+            final department = Department.fromCsv(rowMap);
+            departments.add(department);
+            print('Loaded department: ${department.name}');
+          }
+        } catch (e) {
+          print('Error parsing row $i: $e');
         }
-        return Department.fromCsv(rowMap);
-      }).toList();
+      }
+      
+      print('Successfully loaded ${departments.length} departments');
+      return departments;
+      
     } catch (e) {
       print('Error loading departments: $e');
-      return [];
+      rethrow;
     }
   }
 
@@ -42,7 +58,7 @@ class DepartmentService {
     final lowercaseQuery = query.toLowerCase();
     return departments.where((dept) {
       return dept.name.toLowerCase().contains(lowercaseQuery) ||
-             dept.abbreviation.toLowerCase().contains(lowercaseQuery) ||
+             dept.acronym.toLowerCase().contains(lowercaseQuery) ||
              dept.type.toLowerCase().contains(lowercaseQuery);
     }).toList();
   }
