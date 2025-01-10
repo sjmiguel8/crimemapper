@@ -47,6 +47,7 @@ app.*.map.json
 
 # Large files
 *.pbf
+assets/texas-latest.osm.pbf
 build/
 .dart_tool/
 .flutter-plugins
