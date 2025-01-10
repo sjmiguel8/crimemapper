@@ -8,6 +8,7 @@ import '../providers/department_provider.dart';
 import 'package:geolocator/geolocator.dart';
 import '../providers/crime_provider.dart';
 import 'dart:async';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
@@ -136,6 +137,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   TileLayer(
                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'com.example.app',
+                    tileProvider: CancellableNetworkTileProvider(),
                   ),
                   // User location marker
                   if (userLocation != null)
