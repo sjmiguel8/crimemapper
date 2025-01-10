@@ -1,82 +1,67 @@
 import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' show parse;
-import 'package:html/dom.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart';
 
 class CrimeScraperService {
-  static const String zenRowsBaseUrl = 'https://api.zenrows.com/v1/';
-  static const String targetUrl = 'https://communitycrimemap.com/map';
-  static const String apiKey = 'e9079e00e41a382abf84579e5b3723ea1af089ad';
+  // Houston Police Department API endpoint
+  static const String apiUrl = 'https://data.houstontx.gov/api/3/action/datastore_search';
+  static const String resourceId = '36310599-c9bc-499a-af44-a8b874438e81'; // Police Incidents ID
 
-  Future<Map<String, dynamic>> scrapeCrimeData() async {
+  Future<List<Map<String, dynamic>>> getCrimeData() async {
     try {
-      // Build URL with parameters
-      final uri = Uri.parse(zenRowsBaseUrl).replace(
-        queryParameters: {
-          'url': targetUrl,
-          'apikey': apiKey,
-          'js_render': 'true',
-          'premium_proxy': 'true',
+      final response = await http.get(
+        Uri.parse('$apiUrl?resource_id=$resourceId&limit=100'),
+        headers: {
+          'Accept': 'application/json',
         },
       );
 
-      print('Fetching from: $uri');
-      
-      final response = await http.get(uri);
-      
       if (response.statusCode == 200) {
-        print('Response received: ${response.body.substring(0, 200)}...'); // Debug print
-        
-        final document = parse(response.body);
-        return _extractData(document);
-      } else {
-        print('Error status code: ${response.statusCode}');
-        print('Error response: ${response.body}');
-        throw Exception('Failed to load page: ${response.statusCode}');
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          final records = data['result']['records'] as List;
+          
+          // Convert each record to a marker format
+          return records.map((record) {
+            return {
+              'type': record['offense_type'] ?? '',
+              'location': record['block_range'] ?? '',
+              'date': record['occurred_date'] ?? '',
+              'latitude': record['latitude']?.toString() ?? '',
+              'longitude': record['longitude']?.toString() ?? '',
+              'description': record['offense_type'] ?? '',
+            };
+          }).toList();
+        }
       }
+      throw Exception('Failed to load crime data');
     } catch (e) {
-      print('Error scraping data: $e');
-      rethrow;
+      print('Error getting crime data: $e');
+      return [];
     }
   }
 
-  Map<String, dynamic> _extractData(Document document) {
-    final data = <String, dynamic>{
-      'crimes': [],
-      'categories': [],
-    };
-
+  // Optional: Add method to get specific crime types
+  Future<List<Map<String, dynamic>>> getCrimesByType(String crimeType) async {
     try {
-      // Find the grid section
-      final gridSection = document.querySelector('section.grid');
-      if (gridSection != null) {
-        // Find all links with data-testid="link"
-        final links = gridSection.querySelectorAll('a[data-testid="link"]');
-        
-        for (var link in links) {
-          print('Found link: ${link.text}'); // Debug print
-          data['categories'].add(link.text.trim());
+      final response = await http.get(
+        Uri.parse('$apiUrl?resource_id=$resourceId&q=$crimeType'),
+        headers: {
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          final records = data['result']['records'] as List;
+          return records.map((record) => record as Map<String, dynamic>).toList();
         }
       }
-
-      // Extract crime markers (adjust selectors based on actual HTML structure)
-      final markers = document.querySelectorAll('.marker, .crime-point, [data-type="crime"]');
-      for (var marker in markers) {
-        final crime = {
-          'type': marker.attributes['data-type'] ?? '',
-          'location': marker.attributes['data-location'] ?? '',
-          'date': marker.attributes['data-date'] ?? '',
-          'latitude': marker.attributes['data-lat'] ?? '',
-          'longitude': marker.attributes['data-lng'] ?? '',
-          'description': marker.text.trim(),
-        };
-        data['crimes'].add(crime);
-      }
-
-      print('Extracted data: $data'); // Debug print
-      return data;
+      return [];
     } catch (e) {
-      print('Error extracting data: $e');
-      return data; // Return empty data structure on error
+      print('Error getting crimes by type: $e');
+      return [];
     }
   }
 } 

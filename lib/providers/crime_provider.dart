@@ -1,10 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/local_data_service.dart';
-import '../models/crime_report.dart';
+import '../services/crime_scraper_service.dart';
 
-final localDataServiceProvider = Provider((ref) => LocalDataService());
+final crimeServiceProvider = Provider((ref) => CrimeScraperService());
 
-final crimeReportsProvider = FutureProvider<List<CrimeReport>>((ref) async {
-  final service = ref.read(localDataServiceProvider);
-  return service.loadCrimeData();
+final crimeDataProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  final service = ref.read(crimeServiceProvider);
+  return service.getCrimeData();
 }); 

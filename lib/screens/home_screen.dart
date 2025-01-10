@@ -154,8 +154,11 @@ class DepartmentCard extends StatelessWidget {
       child: ExpansionTile(
         title: Text(department.name),
         subtitle: Text(department.type),
-        leading: CircleAvatar(
-          child: Text(department.acronym),
+        leading: SizedBox(
+          width: 40,
+          child: CircleAvatar(
+            child: Text(department.acronym),
+          ),
         ),
         children: [
           Padding(

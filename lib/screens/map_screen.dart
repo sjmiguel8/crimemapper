@@ -5,6 +5,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/department.dart';
 import '../providers/department_provider.dart';
+import 'package:geolocator/geolocator.dart';
+import '../providers/crime_provider.dart';
+import 'dart:async';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
@@ -15,8 +18,77 @@ class MapScreen extends ConsumerStatefulWidget {
 
 class _MapScreenState extends ConsumerState<MapScreen> {
   final mapController = MapController();
-  static const double initialZoom = 12.0;
-  
+  LatLng? userLocation;
+  final List<Marker> markers = [];
+  bool isLocating = false;
+  String? locationError;
+
+  @override
+  void initState() {
+    super.initState();
+    // Delay getting location to ensure map is ready
+    Future.delayed(Duration.zero, () {
+      _getCurrentLocation();
+    });
+  }
+
+  Future<void> _getCurrentLocation() async {
+    setState(() {
+      isLocating = true;
+      locationError = null;
+    });
+
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        setState(() {
+          locationError = 'Location services are disabled. Please enable them in settings.';
+          isLocating = false;
+        });
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() {
+            locationError = 'Location permission denied';
+            isLocating = false;
+          });
+          return;
+        }
+      }
+
+      final Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 5),
+      );
+
+      setState(() {
+        userLocation = LatLng(position.latitude, position.longitude);
+        isLocating = false;
+      });
+
+      // Move to user location
+      if (userLocation != null) {
+        mapController.move(userLocation!, 15);
+        
+        // Optional: Add smooth animation using Timer
+        Timer(const Duration(milliseconds: 100), () {
+          setState(() {
+            // This rebuild helps ensure the marker is visible
+          });
+        });
+      }
+    } catch (e) {
+      setState(() {
+        locationError = 'Error getting location: $e';
+        isLocating = false;
+      });
+    }
+  }
+
   final Map<String, LatLng> departmentLocations = {
     'HPD': const LatLng(29.7604, -95.3698), // Police Department
     'HFD': const LatLng(29.7520, -95.3573), // Fire Department
@@ -44,6 +116,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final departments = ref.watch(departmentsProvider);
+    final crimeData = ref.watch(crimeDataProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -56,14 +129,47 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               FlutterMap(
                 mapController: mapController,
                 options: MapOptions(
-                  initialCenter: const LatLng(29.7604, -95.3698),
-                  initialZoom: initialZoom,
+                  initialCenter: userLocation ?? const LatLng(29.7604, -95.3698),
+                  initialZoom: 12.0,
                 ),
                 children: [
                   TileLayer(
                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'com.example.app',
                   ),
+                  // User location marker
+                  if (userLocation != null)
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          point: userLocation!,
+                          width: 40,
+                          height: 40,
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                top: 0,
+                                left: 10,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.withOpacity(0.5),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
+                              const Icon(
+                                Icons.location_pin,
+                                color: Colors.blue,
+                                size: 40,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  // Department markers
                   MarkerLayer(
                     markers: depts.map((dept) {
                       final location = departmentLocations[dept.acronym] ?? 
@@ -84,7 +190,69 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                       );
                     }).toList(),
                   ),
+                  crimeData.when(
+                    data: (crimes) {
+                      markers.clear();
+                      for (final crime in crimes) {
+                        final lat = double.tryParse(crime['latitude'] ?? '');
+                        final lng = double.tryParse(crime['longitude'] ?? '');
+                        if (lat != null && lng != null) {
+                          markers.add(
+                            Marker(
+                              point: LatLng(lat, lng),
+                              width: 40,
+                              height: 40,
+                              child: GestureDetector(
+                                onTap: () => _showCrimeInfo(context, crime),
+                                child: const Icon(
+                                  Icons.warning,
+                                  color: Colors.red,
+                                  size: 30,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                      return const SizedBox();
+                    },
+                    loading: () => const SizedBox(),
+                    error: (error, stack) {
+                      print('Error loading crime data: $error');
+                      return const SizedBox();
+                    },
+                  ),
                 ],
+              ),
+              // Add a "locate me" button
+              Positioned(
+                right: 16,
+                bottom: 16,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (locationError != null)
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          locationError!,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    const SizedBox(height: 8),
+                    FloatingActionButton(
+                      heroTag: 'locate',
+                      onPressed: isLocating ? null : _getCurrentLocation,
+                      child: isLocating 
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Icon(Icons.my_location),
+                    ),
+                  ],
+                ),
               ),
               // Legend
               Positioned(
@@ -215,6 +383,29 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 },
                 child: const Text('Visit Website'),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCrimeInfo(BuildContext context, Map<String, dynamic> crime) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Crime Report',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            Text('Type: ${crime['type']}'),
+            Text('Location: ${crime['location']}'),
+            Text('Date: ${crime['date']}'),
           ],
         ),
       ),
